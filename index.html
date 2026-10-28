@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>4PB nichtlinear</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/browser@1.12.0/build/stlite.css" />
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    #hinweis { padding: 2rem; color: #52514e; }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div id="hinweis">
+      <p><b>4-Punkt-Biegung: nichtlineare Festigkeitsauswertung</b></p>
+      <p>Die Anwendung wird geladen (Python läuft im Browser, beim ersten Aufruf ca. 20-60 s).
+         Alle Daten bleiben auf diesem Rechner; es wird nichts hochgeladen.</p>
+    </div>
+  </div>
+  <script type="module">
+    import { mount } from "https://cdn.jsdelivr.net/npm/@stlite/browser@1.12.0/build/stlite.js";
+
+    const v = "?v=1";   // bei Änderungen der Python-Dateien hochzählen (Browser-Cache)
+    const files = {};
+    for (const f of ["app.py", "vierpunkt_fe.py", "weibull.py", "datenimport.py",
+                     "beispieldaten/probentabelle.csv"]) {
+      files[f] = { url: "./" + f + v };
+    }
+    for (let i = 1; i <= 20; i++) {
+      const f = `beispieldaten/P${String(i).padStart(2, "0")}.csv`;
+      files[f] = { url: "./" + f + v };
+    }
+
+    mount(
+      {
+        requirements: ["numpy", "pandas", "plotly"],
+        entrypoint: "app.py",
+        files,
+        streamlitConfig: {
+          "client.toolbarMode": "viewer",
+          "theme.base": "light",
+        },
+      },
+      document.getElementById("root"),
+    );
+  </script>
+</body>
+</html>
